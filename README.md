@@ -1,50 +1,72 @@
-# Welcome to your Expo app 👋
+# Photo Note App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A React Native mobile application built with Expo, Expo Router, and TypeScript.
 
-## Get started
+## Overview
 
-1. Install dependencies
+The Photo Note App allows users to:
 
-   ```bash
-   npm install
-   ```
+* Capture photos using the device camera
+* Request permission, take a photo
+* Preview photo
+* Retake photo if needed
+* Add a title and note to each photo
+* Save notes locally on the device
+* View previously saved photo notes
+* Open a detailed view of any saved note
 
-2. Start the app
+## Tech Stack
 
-   ```bash
-   npx expo start
-   ```
+* React Native
+* Expo
+* TypeScript
+* Expo Router
+* Expo Camera
+* AsyncStorage
 
-In the output, you'll find options to open the app in a
+## Screens
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+### Home Screen
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+Displays all saved photo notes.
 
-## Get a fresh project
+Each note shows:
 
-When you're ready, run:
+* Photo thumbnail
+* Title
+* Date created
 
-```bash
-npm run reset-project
-```
+If no notes exist, display an empty state message.
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Add Note Screen
 
-## Learn more
+Allows the user to:
 
-To learn more about developing your project with Expo, look at the following resources:
+1. Request camera permission
+2. Open the camera
+3. Take a photo
+4. Preview the captured photo
+5. Retake the photo if needed
+6. Enter a title
+7. Enter a note
+8. Save the note locally
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## Navigation
 
-## Join the community
+Routes:
 
-Join our community of developers creating universal apps.
+* `/` → Home Screen
+* `/add` → Add Note Screen
+* `/note/[id]` → Detail Screen
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Success Criteria
+
+A user can:
+
+1. Open the app
+2. Take a photo
+3. Add a title and note
+4. Save the note
+5. See the note on the home screen
+6. Open the note details later
+7. Close and reopen the app without losing data
