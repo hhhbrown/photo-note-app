@@ -5,6 +5,7 @@ import { useRef, useState } from "react";
 import {
     Image,
     KeyboardAvoidingView,
+    Linking,
     Platform,
     Pressable,
     ScrollView,
@@ -110,7 +111,10 @@ export default function AddNoteScreen() {
         }, 100);
     };
 
+    const canRequestCameraPermission = !permission || permission.canAskAgain;
     const shouldShowPermissionMessage = !permission || !permission.granted;
+    const shouldShowSettingsMessage =
+        permission && !permission.granted && !permission.canAskAgain;
 
     return (
         <KeyboardAvoidingView
@@ -135,18 +139,41 @@ export default function AddNoteScreen() {
                 {shouldShowPermissionMessage ? (
                     <View style={styles.panel}>
                         <Text style={styles.panelTitle}>Camera permission needed</Text>
-                        <Text style={styles.panelText}>
-                            Photo Note App needs camera access before you can take a
-                            photo. If permission was denied, allow camera access in your
-                            device settings and try again.
-                        </Text>
+                        {shouldShowSettingsMessage ? (
+                            <>
+                                <Text style={styles.panelText}>
+                                    Camera access is turned off for Photo Note App. Enable
+                                    camera access in your device settings to take a photo.
+                                </Text>
 
-                        <Pressable
-                            style={styles.primaryButton}
-                            onPress={requestPermission}
-                        >
-                            <Text style={styles.primaryButtonText}>Allow Camera</Text>
-                        </Pressable>
+                                <Pressable
+                                    style={styles.primaryButton}
+                                    onPress={Linking.openSettings}
+                                >
+                                    <Text style={styles.primaryButtonText}>
+                                        Open Settings
+                                    </Text>
+                                </Pressable>
+                            </>
+                        ) : (
+                            <>
+                                <Text style={styles.panelText}>
+                                    Photo Note App needs camera access before you can take
+                                    a photo.
+                                </Text>
+
+                                {canRequestCameraPermission ? (
+                                    <Pressable
+                                        style={styles.primaryButton}
+                                        onPress={requestPermission}
+                                    >
+                                        <Text style={styles.primaryButtonText}>
+                                            Allow Camera
+                                        </Text>
+                                    </Pressable>
+                                ) : null}
+                            </>
+                        )}
                     </View>
                 ) : photo ? (
                     <View style={styles.previewSection}>
