@@ -1,19 +1,53 @@
-import { Link } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Link, useFocusEffect } from "expo-router";
+import { useCallback, useState } from "react";
+import {
+    Image,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
+} from "react-native";
+
+const NOTES_STORAGE_KEY = "photo-notes";
+
+type PhotoNote = {
+    id: string;
+    title: string;
+    note: string;
+    imageUri: string;
+    createdAt: string;
+};
 
 export default function HomeScreen() {
+    const [notes, setNotes] = useState<PhotoNote[]>([]);
+    const [loadError, setLoadError] = useState("");
+
+    useFocusEffect(
+        useCallback(() => {
+            const loadNotes = async () => {
+                try {
+                    const savedNotesJson = await AsyncStorage.getItem(NOTES_STORAGE_KEY);
+                    const savedNotes: PhotoNote[] = savedNotesJson
+                        ? JSON.parse(savedNotesJson)
+                        : [];
+
+                    setNotes(savedNotes);
+                    setLoadError("");
+                } catch {
+                    setLoadError("Saved notes could not be loaded.");
+                }
+            };
+
+            loadNotes();
+        }, [])
+    );
+
     return (
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.title}>Photo Note App</Text>
-            </View>
-
-            <View style={styles.emptyState}>
-                <Text style={styles.emptyTitle}>No saved notes yet</Text>
-                <Text style={styles.emptyText}>
-                    Add your first photo note to keep a picture and a quick thought
-                    together.
-                </Text>
             </View>
 
             <Link href="/add" asChild>
@@ -22,17 +56,44 @@ export default function HomeScreen() {
                 </Pressable>
             </Link>
 
-            <Link href="/note/sample-1" style={styles.sampleNote}>
-                <Text style={styles.sampleTitle}>Sample photo note</Text>
-                <Text style={styles.sampleMeta}>Tap to open /note/sample-1</Text>
-            </Link>
-        </View>
+            {loadError ? <Text style={styles.errorText}>{loadError}</Text> : null}
+
+            {notes.length === 0 ? (
+                <View style={styles.emptyState}>
+                    <Text style={styles.emptyTitle}>No saved notes yet</Text>
+                    <Text style={styles.emptyText}>
+                        Add your first photo note to keep a picture and a quick thought
+                        together.
+                    </Text>
+                </View>
+            ) : (
+                <View style={styles.notesList}>
+                    {notes.map((note) => (
+                        <Link key={note.id} href={`/note/${note.id}`} asChild>
+                            <Pressable style={styles.noteCard}>
+                                <Image
+                                    source={{ uri: note.imageUri }}
+                                    style={styles.noteImage}
+                                />
+
+                                <View style={styles.noteContent}>
+                                    <Text style={styles.noteTitle}>{note.title}</Text>
+                                    <Text style={styles.noteDate}>
+                                        {new Date(note.createdAt).toLocaleDateString()}
+                                    </Text>
+                                </View>
+                            </Pressable>
+                        </Link>
+                    ))}
+                </View>
+            )}
+        </ScrollView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flexGrow: 1,
         gap: 24,
         padding: 24,
         paddingTop: 72,
@@ -81,20 +142,41 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "700",
     },
-    sampleNote: {
-        gap: 4,
+    errorText: {
+        color: "#000000",
+        fontSize: 14,
+        fontWeight: "600",
+        lineHeight: 20,
+    },
+    notesList: {
+        gap: 12,
+    },
+    noteCard: {
+        flexDirection: "row",
+        gap: 14,
+        alignItems: "center",
         padding: 16,
         borderWidth: 1,
         borderColor: "#d4d4d4",
         borderRadius: 8,
         backgroundColor: "#fafafa",
     },
-    sampleTitle: {
+    noteImage: {
+        width: 72,
+        height: 72,
+        borderRadius: 8,
+        backgroundColor: "#e5e5e5",
+    },
+    noteContent: {
+        flex: 1,
+        gap: 6,
+    },
+    noteTitle: {
         color: "#000000",
         fontSize: 16,
         fontWeight: "600",
     },
-    sampleMeta: {
+    noteDate: {
         color: "#525252",
         fontSize: 14,
     },
