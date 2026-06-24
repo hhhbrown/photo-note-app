@@ -1,7 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Link, Stack, useLocalSearchParams } from "expo-router";
+import { Link, Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
+    Alert,
     Image,
     Pressable,
     ScrollView,
@@ -14,10 +15,45 @@ import type { PhotoNote } from "../add";
 const NOTES_STORAGE_KEY = "photo-notes";
 
 export default function NoteDetailScreen() {
+    const router = useRouter();
     const { id } = useLocalSearchParams<{ id: string }>();
     const [note, setNote] = useState<PhotoNote | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const screenTitle = note ? `${note.title} Details` : "Details";
+
+    const deleteNote = async () => {
+        const savedNotesJson = await AsyncStorage.getItem(NOTES_STORAGE_KEY);
+        const savedNotes: PhotoNote[] = savedNotesJson
+            ? JSON.parse(savedNotesJson)
+            : [];
+        const updatedNotes = savedNotes.filter((savedNote) => savedNote.id !== id);
+
+        await AsyncStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(updatedNotes));
+
+        if (router.canGoBack()) {
+            router.back();
+        } else {
+            router.replace("/");
+        }
+    };
+
+    const confirmDelete = () => {
+        Alert.alert(
+            "Delete Note",
+            "Are you sure you want to delete this note?",
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel",
+                },
+                {
+                    text: "Delete",
+                    style: "destructive",
+                    onPress: deleteNote,
+                },
+            ]
+        );
+    };
 
     useEffect(() => {
         const loadNote = async () => {
@@ -80,6 +116,10 @@ export default function NoteDetailScreen() {
                 </Text>
                 <Text style={styles.noteText}>{note.note || "No note text added."}</Text>
             </View>
+
+            <Pressable style={styles.deleteButton} onPress={confirmDelete}>
+                <Text style={styles.deleteButtonText}>Delete Note</Text>
+            </Pressable>
         </ScrollView>
     );
 }
@@ -114,6 +154,20 @@ const styles = StyleSheet.create({
         color: "#000000",
         fontSize: 17,
         lineHeight: 25,
+    },
+    deleteButton: {
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: 52,
+        borderWidth: 1,
+        borderColor: "#000000",
+        borderRadius: 8,
+        backgroundColor: "#ffffff",
+    },
+    deleteButtonText: {
+        color: "#000000",
+        fontSize: 16,
+        fontWeight: "700",
     },
     notFoundPanel: {
         gap: 16,
