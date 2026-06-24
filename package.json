@@ -12,6 +12,7 @@
   "dependencies": {
     "@react-navigation/native": "^7.1.8",
     "expo": "~54.0.34",
+    "expo-camera": "~17.0.10",
     "expo-constants": "~18.0.13",
     "expo-linking": "~8.0.12",
     "expo-router": "~6.0.23",
