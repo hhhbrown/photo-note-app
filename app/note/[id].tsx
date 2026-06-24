@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import type { PhotoNote } from "../add";
 
+// Must match the Add and Home screens so saved notes are shared across routes.
 const NOTES_STORAGE_KEY = "photo-notes";
 
 export default function NoteDetailScreen() {
@@ -21,15 +22,17 @@ export default function NoteDetailScreen() {
     const [isLoading, setIsLoading] = useState(true);
     const screenTitle = note ? `${note.title} Details` : "Details";
 
-    const deleteNote = async () => {
-        const savedNotesJson = await AsyncStorage.getItem(NOTES_STORAGE_KEY);
-        const savedNotes: PhotoNote[] = savedNotesJson
-            ? JSON.parse(savedNotesJson)
+    const deleteCurrentNote = async () => {
+        // Delete by filtering the persisted array; no separate index is maintained.
+        const storedNotesJson = await AsyncStorage.getItem(NOTES_STORAGE_KEY);
+        const savedNotes: PhotoNote[] = storedNotesJson
+            ? JSON.parse(storedNotesJson)
             : [];
         const updatedNotes = savedNotes.filter((savedNote) => savedNote.id !== id);
 
         await AsyncStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(updatedNotes));
 
+        // Return to the existing Home screen when possible to keep navigation natural.
         if (router.canGoBack()) {
             router.back();
         } else {
@@ -37,7 +40,7 @@ export default function NoteDetailScreen() {
         }
     };
 
-    const confirmDelete = () => {
+    const confirmDeleteNote = () => {
         Alert.alert(
             "Delete Note",
             "Are you sure you want to delete this note?",
@@ -49,18 +52,19 @@ export default function NoteDetailScreen() {
                 {
                     text: "Delete",
                     style: "destructive",
-                    onPress: deleteNote,
+                    onPress: deleteCurrentNote,
                 },
             ]
         );
     };
 
     useEffect(() => {
-        const loadNote = async () => {
+        const loadCurrentNote = async () => {
             try {
-                const savedNotesJson = await AsyncStorage.getItem(NOTES_STORAGE_KEY);
-                const savedNotes: PhotoNote[] = savedNotesJson
-                    ? JSON.parse(savedNotesJson)
+                // Detail pages are deep-linkable, so load from storage instead of route params.
+                const storedNotesJson = await AsyncStorage.getItem(NOTES_STORAGE_KEY);
+                const savedNotes: PhotoNote[] = storedNotesJson
+                    ? JSON.parse(storedNotesJson)
                     : [];
                 const matchingNote = savedNotes.find((savedNote) => savedNote.id === id);
 
@@ -72,7 +76,7 @@ export default function NoteDetailScreen() {
             }
         };
 
-        loadNote();
+        loadCurrentNote();
     }, [id]);
 
     if (isLoading) {
@@ -117,7 +121,7 @@ export default function NoteDetailScreen() {
                 <Text style={styles.noteText}>{note.note || "No note text added."}</Text>
             </View>
 
-            <Pressable style={styles.deleteButton} onPress={confirmDelete}>
+            <Pressable style={styles.deleteButton} onPress={confirmDeleteNote}>
                 <Text style={styles.deleteButtonText}>Delete Note</Text>
             </Pressable>
         </ScrollView>

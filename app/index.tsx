@@ -9,16 +9,9 @@ import {
     Text,
     View,
 } from "react-native";
+import type { PhotoNote } from "./add";
 
 const NOTES_STORAGE_KEY = "photo-notes";
-
-type PhotoNote = {
-    id: string;
-    title: string;
-    note: string;
-    imageUri: string;
-    createdAt: string;
-};
 
 export default function HomeScreen() {
     const router = useRouter();
@@ -27,11 +20,12 @@ export default function HomeScreen() {
 
     useFocusEffect(
         useCallback(() => {
-            const loadNotes = async () => {
+            const loadSavedNotes = async () => {
                 try {
-                    const savedNotesJson = await AsyncStorage.getItem(NOTES_STORAGE_KEY);
-                    const savedNotes: PhotoNote[] = savedNotesJson
-                        ? JSON.parse(savedNotesJson)
+                    // Home reloads on focus so returning from add/delete shows current storage.
+                    const storedNotesJson = await AsyncStorage.getItem(NOTES_STORAGE_KEY);
+                    const savedNotes: PhotoNote[] = storedNotesJson
+                        ? JSON.parse(storedNotesJson)
                         : [];
 
                     setNotes(savedNotes);
@@ -41,7 +35,7 @@ export default function HomeScreen() {
                 }
             };
 
-            loadNotes();
+            loadSavedNotes();
         }, [])
     );
 
@@ -109,11 +103,6 @@ const styles = StyleSheet.create({
         color: "#000000",
         fontSize: 34,
         fontWeight: "700",
-    },
-    subtitle: {
-        color: "#404040",
-        fontSize: 16,
-        lineHeight: 22,
     },
     emptyState: {
         gap: 8,

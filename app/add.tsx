@@ -14,6 +14,7 @@ import {
     View,
 } from "react-native";
 
+// Keep the storage key stable so every route reads and writes the same note list.
 const NOTES_STORAGE_KEY = "photo-notes";
 
 export type PhotoNote = {
@@ -28,10 +29,11 @@ export default function AddNoteScreen() {
     const router = useRouter();
     const cameraRef = useRef<CameraView>(null);
     const scrollViewRef = useRef<ScrollView>(null);
+    // Expo owns the platform-specific permission prompt; the UI only reacts to status.
     const [permission, requestPermission] = useCameraPermissions();
     const [photo, setPhoto] = useState<CameraCapturedPicture | null>(null);
     const [title, setTitle] = useState("");
-    const [note, setNote] = useState("");
+    const [noteText, setNoteText] = useState("");
     const [isTakingPhoto, setIsTakingPhoto] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [validationMessage, setValidationMessage] = useState("");
@@ -69,15 +71,16 @@ export default function AddNoteScreen() {
         setValidationMessage("");
 
         try {
-            const savedNotesJson = await AsyncStorage.getItem(NOTES_STORAGE_KEY);
-            const savedNotes: PhotoNote[] = savedNotesJson
-                ? JSON.parse(savedNotesJson)
+            // AsyncStorage stores strings, so notes are persisted as one JSON array.
+            const storedNotesJson = await AsyncStorage.getItem(NOTES_STORAGE_KEY);
+            const savedNotes: PhotoNote[] = storedNotesJson
+                ? JSON.parse(storedNotesJson)
                 : [];
 
             const newNote: PhotoNote = {
                 id: Date.now().toString(),
                 title: trimmedTitle,
-                note: note.trim(),
+                note: noteText.trim(),
                 imageUri: photo.uri,
                 createdAt: new Date().toISOString(),
             };
@@ -87,6 +90,7 @@ export default function AddNoteScreen() {
                 JSON.stringify([...savedNotes, newNote])
             );
 
+            // Prefer popping back to the existing Home screen to preserve stack direction.
             if (router.canGoBack()) {
                 router.back();
             } else {
@@ -99,13 +103,14 @@ export default function AddNoteScreen() {
         }
     };
 
-    const scrollToInputs = () => {
+    const scrollToNoteFields = () => {
+        // Give the keyboard a moment to open before scrolling the focused input into view.
         setTimeout(() => {
             scrollViewRef.current?.scrollToEnd({ animated: true });
         }, 100);
     };
 
-    const showPermissionMessage = !permission || !permission.granted;
+    const shouldShowPermissionMessage = !permission || !permission.granted;
 
     return (
         <KeyboardAvoidingView
@@ -127,7 +132,7 @@ export default function AddNoteScreen() {
                     </Text>
                 </View>
 
-                {showPermissionMessage ? (
+                {shouldShowPermissionMessage ? (
                     <View style={styles.panel}>
                         <Text style={styles.panelTitle}>Camera permission needed</Text>
                         <Text style={styles.panelText}>
@@ -153,7 +158,7 @@ export default function AddNoteScreen() {
                                 placeholder="Title"
                                 placeholderTextColor="#737373"
                                 value={title}
-                                onFocus={scrollToInputs}
+                                onFocus={scrollToNoteFields}
                                 onChangeText={(text) => {
                                     setTitle(text);
                                     setValidationMessage("");
@@ -166,9 +171,9 @@ export default function AddNoteScreen() {
                                 placeholder="Note"
                                 placeholderTextColor="#737373"
                                 textAlignVertical="top"
-                                value={note}
-                                onFocus={scrollToInputs}
-                                onChangeText={setNote}
+                                value={noteText}
+                                onFocus={scrollToNoteFields}
+                                onChangeText={setNoteText}
                             />
                         </View>
 
