@@ -28,11 +28,15 @@ The Photo Note App allows users to:
 
 Install dependencies:
 
+```bash
 npm install
+```
 
 Start the development server:
 
+```bash
 npx expo start
+```
 
 Scan the QR code using Expo Go on a physical device.
 
@@ -64,7 +68,7 @@ Allows the user to:
 8. Save the note locally
 
 ### Detail Screen
-When a saved note is opened show:
+Displays the selected photo note, including:
 1. The full photo
 2. Title
 3. Note text
@@ -94,9 +98,9 @@ Images are stored on the device and referenced by their local URI.
 
 Notes are persisted locally using AsyncStorage.
 
-The application stores note metadata, including the image URI, title, note text, and creation date. When the application launches, saved notes are loaded from AsyncStorage and displayed on the Home Screen.
+The application stores note metadata including the image URI, title, note text, and creation date. When the application launches, saved notes are loaded from AsyncStorage and displayed on the Home Screen.
 
-Images remain stored on the device and are referenced through their local file URI.
+Images remain stored on the device and are referenced using their local file URI.
 
 ## Implementation Notes
 
