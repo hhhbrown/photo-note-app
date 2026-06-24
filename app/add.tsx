@@ -15,7 +15,7 @@ import {
     View,
 } from "react-native";
 
-// Keep the storage key stable so every route reads and writes the same note list.
+// Keep the storage key constant so every route reads and writes the same note list.
 const NOTES_STORAGE_KEY = "photo-notes";
 
 export type PhotoNote = {
@@ -30,7 +30,7 @@ export default function AddNoteScreen() {
     const router = useRouter();
     const cameraRef = useRef<CameraView>(null);
     const scrollViewRef = useRef<ScrollView>(null);
-    // Expo owns the platform-specific permission prompt; the UI only reacts to status.
+    // Expo owns the platform-specific permission prompt; the UI only reacts to status of useCameraPermissions.
     const [permission, requestPermission] = useCameraPermissions();
     const [photo, setPhoto] = useState<CameraCapturedPicture | null>(null);
     const [title, setTitle] = useState("");
@@ -91,7 +91,7 @@ export default function AddNoteScreen() {
                 JSON.stringify([...savedNotes, newNote])
             );
 
-            // Prefer popping back to the existing Home screen to preserve stack direction.
+            // Pop back to the existing Home screen to preserve stack direction.
             if (router.canGoBack()) {
                 router.back();
             } else {
@@ -132,7 +132,7 @@ export default function AddNoteScreen() {
                 <View style={styles.header}>
                     <Text style={styles.title}>Add Note</Text>
                     <Text style={styles.subtitle}>
-                        Take a photo, add a title, and save it locally.
+                        Take a photo, and add a Note.
                     </Text>
                 </View>
 

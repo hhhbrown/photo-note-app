@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import type { PhotoNote } from "../add";
 
-// Must match the Add and Home screens so saved notes are shared across routes.
+// Match the Add and Home screens so saved notes are shared across routes.
 const NOTES_STORAGE_KEY = "photo-notes";
 
 export default function NoteDetailScreen() {

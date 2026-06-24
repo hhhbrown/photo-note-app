@@ -60,8 +60,7 @@ export default function HomeScreen() {
                 <View style={styles.emptyState}>
                     <Text style={styles.emptyTitle}>No saved notes yet</Text>
                     <Text style={styles.emptyText}>
-                        Add your first photo note to keep a picture and a quick thought
-                        together.
+                        Add your first photo note to keep a picture and a thought together.
                     </Text>
                 </View>
             ) : (
