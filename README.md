@@ -51,6 +51,13 @@ Allows the user to:
 7. Enter a note
 8. Save the note locally
 
+### Detail Screen
+When a saved note is opened show:
+1. The full photo
+2. Title
+3. Note text
+4. Date created
+
 ## Navigation
 
 Routes:
