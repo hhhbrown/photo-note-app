@@ -13,6 +13,13 @@ import type { PhotoNote } from "./add";
 
 const NOTES_STORAGE_KEY = "photo-notes";
 
+const formatNoteDate = (dateString: string) =>
+    new Date(dateString).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+    });
+
 export default function HomeScreen() {
     const router = useRouter();
     const [notes, setNotes] = useState<PhotoNote[]>([]);
@@ -41,10 +48,6 @@ export default function HomeScreen() {
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.title}>Photo Note App</Text>
-            </View>
-
             <Link href="/add" asChild>
                 <Pressable style={styles.primaryButton}>
                     <Text style={styles.primaryButtonText}>Add Note</Text>
@@ -77,7 +80,7 @@ export default function HomeScreen() {
                             <View style={styles.noteContent}>
                                 <Text style={styles.noteTitle}>{note.title}</Text>
                                 <Text style={styles.noteDate}>
-                                    {new Date(note.createdAt).toLocaleDateString()}
+                                    {formatNoteDate(note.createdAt)}
                                 </Text>
                             </View>
                         </Pressable>
@@ -91,18 +94,10 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
-        gap: 24,
+        gap: 20,
         padding: 24,
-        paddingTop: 72,
+        paddingTop: 24,
         backgroundColor: "#ffffff",
-    },
-    header: {
-        gap: 8,
-    },
-    title: {
-        color: "#000000",
-        fontSize: 34,
-        fontWeight: "700",
     },
     emptyState: {
         gap: 8,
