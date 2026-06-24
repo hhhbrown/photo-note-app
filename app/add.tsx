@@ -27,6 +27,7 @@ export type PhotoNote = {
 export default function AddNoteScreen() {
     const router = useRouter();
     const cameraRef = useRef<CameraView>(null);
+    const scrollViewRef = useRef<ScrollView>(null);
     const [permission, requestPermission] = useCameraPermissions();
     const [photo, setPhoto] = useState<CameraCapturedPicture | null>(null);
     const [title, setTitle] = useState("");
@@ -94,17 +95,26 @@ export default function AddNoteScreen() {
         }
     };
 
+    const scrollToInputs = () => {
+        setTimeout(() => {
+            scrollViewRef.current?.scrollToEnd({ animated: true });
+        }, 100);
+    };
+
     const showPermissionMessage = !permission || !permission.granted;
 
     return (
         <KeyboardAvoidingView
             style={styles.screen}
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            keyboardVerticalOffset={96}
         >
             <ScrollView
+                ref={scrollViewRef}
                 contentContainerStyle={styles.container}
                 keyboardDismissMode="on-drag"
                 keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
             >
                 <View style={styles.header}>
                     <Text style={styles.title}>Add Note</Text>
@@ -139,6 +149,7 @@ export default function AddNoteScreen() {
                                 placeholder="Title"
                                 placeholderTextColor="#737373"
                                 value={title}
+                                onFocus={scrollToInputs}
                                 onChangeText={(text) => {
                                     setTitle(text);
                                     setValidationMessage("");
@@ -152,6 +163,7 @@ export default function AddNoteScreen() {
                                 placeholderTextColor="#737373"
                                 textAlignVertical="top"
                                 value={note}
+                                onFocus={scrollToInputs}
                                 onChangeText={setNote}
                             />
                         </View>
@@ -201,7 +213,6 @@ export default function AddNoteScreen() {
                         </Pressable>
                     </View>
                 )}
-
             </ScrollView>
         </KeyboardAvoidingView>
     );
@@ -217,6 +228,7 @@ const styles = StyleSheet.create({
         gap: 24,
         padding: 24,
         paddingTop: 72,
+        paddingBottom: 180,
         backgroundColor: "#ffffff",
     },
     header: {
