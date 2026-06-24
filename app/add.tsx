@@ -87,7 +87,11 @@ export default function AddNoteScreen() {
                 JSON.stringify([...savedNotes, newNote])
             );
 
-            router.replace("/");
+            if (router.canGoBack()) {
+                router.back();
+            } else {
+                router.replace("/");
+            }
         } catch {
             setValidationMessage("Something went wrong while saving. Please try again.");
         } finally {
