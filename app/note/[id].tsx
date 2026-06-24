@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Link, useLocalSearchParams } from "expo-router";
+import { Link, Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import {
     Image,
@@ -17,6 +17,7 @@ export default function NoteDetailScreen() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const [note, setNote] = useState<PhotoNote | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const screenTitle = note ? `${note.title} Details` : "Details";
 
     useEffect(() => {
         const loadNote = async () => {
@@ -41,6 +42,7 @@ export default function NoteDetailScreen() {
     if (isLoading) {
         return (
             <View style={styles.container}>
+                <Stack.Screen options={{ title: screenTitle }} />
                 <Text style={styles.title}>Loading note...</Text>
             </View>
         );
@@ -49,24 +51,26 @@ export default function NoteDetailScreen() {
     if (!note) {
         return (
             <View style={styles.container}>
-                <View style={styles.panel}>
+                <Stack.Screen options={{ title: screenTitle }} />
+                <View style={styles.notFoundPanel}>
                     <Text style={styles.panelTitle}>Note not found</Text>
                     <Text style={styles.panelText}>
-                        This note may have been removed or could not be loaded.
+                        The requested note may have been removed or is unavailable.
                     </Text>
-                </View>
 
-                <Link href="/" asChild>
-                    <Pressable style={styles.secondaryButton}>
-                        <Text style={styles.secondaryButtonText}>Back Home</Text>
-                    </Pressable>
-                </Link>
+                    <Link href="/" asChild>
+                        <Pressable style={styles.secondaryButton}>
+                            <Text style={styles.secondaryButtonText}>Back Home</Text>
+                        </Pressable>
+                    </Link>
+                </View>
             </View>
         );
     }
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
+            <Stack.Screen options={{ title: screenTitle }} />
             <Image source={{ uri: note.imageUri }} style={styles.fullImage} />
 
             <View style={styles.content}>
@@ -76,12 +80,6 @@ export default function NoteDetailScreen() {
                 </Text>
                 <Text style={styles.noteText}>{note.note || "No note text added."}</Text>
             </View>
-
-            <Link href="/" asChild>
-                <Pressable style={styles.secondaryButton}>
-                    <Text style={styles.secondaryButtonText}>Back Home</Text>
-                </Pressable>
-            </Link>
         </ScrollView>
     );
 }
@@ -117,8 +115,8 @@ const styles = StyleSheet.create({
         fontSize: 17,
         lineHeight: 25,
     },
-    panel: {
-        gap: 8,
+    notFoundPanel: {
+        gap: 16,
         padding: 20,
         borderWidth: 1,
         borderColor: "#d4d4d4",

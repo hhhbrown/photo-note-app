@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { CameraView, type CameraCapturedPicture, useCameraPermissions } from "expo-camera";
 import { useRef, useState } from "react";
 import {
@@ -202,11 +202,6 @@ export default function AddNoteScreen() {
                     </View>
                 )}
 
-                <Link href="/" asChild>
-                    <Pressable style={styles.secondaryButton}>
-                        <Text style={styles.secondaryButtonText}>Back Home</Text>
-                    </Pressable>
-                </Link>
             </ScrollView>
         </KeyboardAvoidingView>
     );
