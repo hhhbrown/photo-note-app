@@ -24,6 +24,18 @@ The Photo Note App allows users to:
 * Expo Camera
 * AsyncStorage
 
+## Running the Project
+
+Install dependencies:
+
+npm install
+
+Start the development server:
+
+npx expo start
+
+Scan the QR code using Expo Go on a physical device.
+
 ## Screens
 
 ### Home Screen
@@ -66,14 +78,29 @@ Routes:
 * `/add` → Add Note Screen
 * `/note/[id]` → Detail Screen
 
-## Success Criteria
+## Data Model
 
-A user can:
+Each saved note contains:
 
-1. Open the app
-2. Take a photo
-3. Add a title and note
-4. Save the note
-5. See the note on the home screen
-6. Open the note details later
-7. Close and reopen the app without losing data
+- Unique identifier
+- Title
+- Note text
+- Image URI
+- Creation timestamp
+
+Images are stored on the device and referenced by their local URI.
+
+## Local Storage
+
+Notes are persisted locally using AsyncStorage.
+
+The application stores note metadata, including the image URI, title, note text, and creation date. When the application launches, saved notes are loaded from AsyncStorage and displayed on the Home Screen.
+
+Images remain stored on the device and are referenced through their local file URI.
+
+## Implementation Notes
+
+- Camera functionality is implemented using Expo Camera.
+- Notes are persisted locally using AsyncStorage.
+- Images remain stored on the device and are referenced using their local URI.
+- Navigation is handled using Expo Router.
