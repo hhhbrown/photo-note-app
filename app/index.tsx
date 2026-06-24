@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Link, useFocusEffect } from "expo-router";
+import { Link, useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useState } from "react";
 import {
     Image,
@@ -21,6 +21,7 @@ type PhotoNote = {
 };
 
 export default function HomeScreen() {
+    const router = useRouter();
     const [notes, setNotes] = useState<PhotoNote[]>([]);
     const [loadError, setLoadError] = useState("");
 
@@ -69,21 +70,23 @@ export default function HomeScreen() {
             ) : (
                 <View style={styles.notesList}>
                     {notes.map((note) => (
-                        <Link key={note.id} href={`/note/${note.id}`} asChild>
-                            <Pressable style={styles.noteCard}>
-                                <Image
-                                    source={{ uri: note.imageUri }}
-                                    style={styles.noteImage}
-                                />
+                        <Pressable
+                            key={note.id}
+                            style={styles.noteCard}
+                            onPress={() => router.push(`/note/${note.id}`)}
+                        >
+                            <Image
+                                source={{ uri: note.imageUri }}
+                                style={styles.noteImage}
+                            />
 
-                                <View style={styles.noteContent}>
-                                    <Text style={styles.noteTitle}>{note.title}</Text>
-                                    <Text style={styles.noteDate}>
-                                        {new Date(note.createdAt).toLocaleDateString()}
-                                    </Text>
-                                </View>
-                            </Pressable>
-                        </Link>
+                            <View style={styles.noteContent}>
+                                <Text style={styles.noteTitle}>{note.title}</Text>
+                                <Text style={styles.noteDate}>
+                                    {new Date(note.createdAt).toLocaleDateString()}
+                                </Text>
+                            </View>
+                        </Pressable>
                     ))}
                 </View>
             )}
